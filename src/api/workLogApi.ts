@@ -2,7 +2,7 @@ import type { WorkLogEntry, WorkLogFormValues } from '../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
 const ENTRIES_URL = `${API_BASE_URL}/entries`;
-const STATIC_DATA_URL = '/worklog-static-data.json';
+const STATIC_DATA_URL = `${import.meta.env.BASE_URL}worklog-static-data.json`;
 
 async function request<T>(url: string, init?: RequestInit): Promise<T> {
   const response = await fetch(url, {

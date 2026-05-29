@@ -1,12 +1,16 @@
 import type { WorkLogFormValues } from '../../types';
 
-export const EMPTY_VALUES: WorkLogFormValues = {
-  date: '',
-  workType: '',
-  volume: '',
-  unit: '',
-  performer: '',
-};
+export function getDefaultAddFormValues(): WorkLogFormValues {
+  return {
+    date: new Date().toLocaleDateString('en-CA'),
+    workType: '',
+    volume: '',
+    unit: '',
+    performer: '',
+  };
+}
+
+export const EMPTY_VALUES: WorkLogFormValues = getDefaultAddFormValues();
 
 export function validateFormValues(values: WorkLogFormValues): string | null {
 

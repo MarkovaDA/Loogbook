@@ -3,7 +3,7 @@ import { Box, Button, Stack } from '@mui/material';
 import type { WorkLogFormValues } from '../../types';
 import { Fields } from '../Fields';
 import {
-  EMPTY_VALUES,
+  getDefaultAddFormValues,
   trimFormValues,
   validateFormValues,
 } from '../Utils';
@@ -15,7 +15,7 @@ interface AddFormProps {
 }
 
 export function AddForm({ isSubmitting, onSubmit, onCancel }: AddFormProps) {
-  const [values, setValues] = useState<WorkLogFormValues>(EMPTY_VALUES);
+  const [values, setValues] = useState<WorkLogFormValues>(getDefaultAddFormValues);
   const [error, setError] = useState('');
 
   const handleChange = (field: keyof WorkLogFormValues, value: string) => {
@@ -34,8 +34,7 @@ export function AddForm({ isSubmitting, onSubmit, onCancel }: AddFormProps) {
 
     setError('');
     await onSubmit(trimFormValues(values));
-    setValues(EMPTY_VALUES);
-    setError('');
+    setValues(getDefaultAddFormValues());
   };
 
   return (
