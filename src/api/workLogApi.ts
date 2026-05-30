@@ -39,7 +39,7 @@ export async function getEntries() {
       return entries.map(normalizeEntry);
     }
   } catch {
-    // API недоступен — загрузим статические данные ниже
+    return loadStaticEntries();
   }
 
   return loadStaticEntries();

@@ -1,13 +1,44 @@
-import { Alert, Grid, Stack, TextField } from '@mui/material';
-import type { WorkLogFormValues } from '../../types';
+import {
+  Alert,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  Stack,
+  TextField,
+} from '@mui/material';
+import type { WorkLogFormValues, WorkType } from '../../types';
 
 interface FieldsProps {
   values: WorkLogFormValues;
   error: string;
+  workTypes: WorkType[];
+  isWorkTypesLoading?: boolean;
   onChange: (field: keyof WorkLogFormValues, value: string) => void;
 }
 
-export function Fields({ values, error, onChange }: FieldsProps) {
+export function Fields({
+  values,
+  error,
+  workTypes,
+  isWorkTypesLoading = false,
+  onChange,
+}: FieldsProps) {
+  const catalogNames = new Set(workTypes.map((item) => item.name));
+  const hasCustomWorkType =
+    values.workType.length > 0 && !catalogNames.has(values.workType);
+
+  const handleWorkTypeChange = (workTypeName: string) => {
+    const selected = workTypes.find((item) => item.name === workTypeName);
+
+    onChange('workType', workTypeName);
+
+    if (selected) {
+      onChange('unit', selected.defaultUnit);
+    }
+  };
+
   return (
     <Stack spacing={2}>
       <TextField
@@ -20,14 +51,30 @@ export function Fields({ values, error, onChange }: FieldsProps) {
         slotProps={{ inputLabel: { shrink: true } }}
       />
 
-      <TextField
-        label="Вид работ"
-        required
-        fullWidth
-        placeholder="Например, Монтаж опалубки"
-        value={values.workType}
-        onChange={(event) => onChange('workType', event.target.value)}
-      />
+      <FormControl fullWidth required>
+        <InputLabel id="work-type-label">Вид работ</InputLabel>
+        <Select
+          labelId="work-type-label"
+          label="Вид работ"
+          value={values.workType}
+          onChange={(event) => handleWorkTypeChange(event.target.value)}
+          disabled={isWorkTypesLoading}
+        >
+          <MenuItem value="">
+            <em>{isWorkTypesLoading ? 'Загрузка...' : 'Выберите вид работ'}</em>
+          </MenuItem>
+
+          {hasCustomWorkType && (
+            <MenuItem value={values.workType}>{values.workType}</MenuItem>
+          )}
+
+          {workTypes.map((item) => (
+            <MenuItem key={item.id} value={item.name}>
+              {item.name}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
 
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, sm: 6 }}>

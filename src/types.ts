@@ -8,3 +8,9 @@ export interface WorkLogEntry {
 }
 
 export type WorkLogFormValues = Omit<WorkLogEntry, 'id'>;
+
+export interface WorkType {
+  id: number;
+  name: string;
+  defaultUnit: string;
+}

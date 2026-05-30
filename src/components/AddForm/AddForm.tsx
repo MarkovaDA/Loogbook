@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Box, Button, Stack } from '@mui/material';
 import type { WorkLogFormValues } from '../../types';
+import { useWorkTypes } from '../../hooks/useWorkTypes';
 import { Fields } from '../Fields';
 import {
   getDefaultAddFormValues,
@@ -15,6 +16,7 @@ interface AddFormProps {
 }
 
 export function AddForm({ isSubmitting, onSubmit, onCancel }: AddFormProps) {
+  const { workTypes, isLoading: isWorkTypesLoading } = useWorkTypes();
   const [values, setValues] = useState<WorkLogFormValues>(getDefaultAddFormValues);
   const [error, setError] = useState('');
 
@@ -40,7 +42,13 @@ export function AddForm({ isSubmitting, onSubmit, onCancel }: AddFormProps) {
   return (
     <Box component="form" onSubmit={handleSubmit} noValidate>
       <Stack spacing={2}>
-        <Fields values={values} error={error} onChange={handleChange} />
+        <Fields
+          values={values}
+          error={error}
+          workTypes={workTypes}
+          isWorkTypesLoading={isWorkTypesLoading}
+          onChange={handleChange}
+        />
 
         <Stack direction="row" spacing={1} sx={{ justifyContent: 'flex-end' }}>
           <Button type="button" variant="outlined" onClick={onCancel} disabled={isSubmitting}>
