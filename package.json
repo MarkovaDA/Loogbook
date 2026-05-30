@@ -10,7 +10,9 @@
     "build": "tsc -b && vite build --config config/vite.config.ts",
     "lint": "eslint . --config config/eslint.config.js",
     "preview": "vite preview --config config/vite.config.ts",
-    "db:generate": "drizzle-kit generate --config config/drizzle.config.js"
+    "db:generate": "drizzle-kit generate --config config/drizzle.config.js",
+    "docker:up": "docker compose -f config/docker-compose.yml up --build",
+    "docker:down": "docker compose -f config/docker-compose.yml down"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

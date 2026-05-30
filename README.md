@@ -32,6 +32,27 @@ npm run dev
 npm run server
 ```
 
+## Docker
+
+Сборка и запуск через Docker Compose:
+
+```bash
+npm run docker:up
+```
+
+- Фронтенд: http://localhost:8080/
+- API (SQLite): http://localhost:3001/entries
+
+Остановка:
+
+```bash
+npm run docker:down
+```
+
+Конфигурация: `config/docker-compose.yml`
+
+Данные SQLite сохраняются в Docker volume `worklog-db`.
+
 ## База данных (SQLite)
 
 - Backend: **Node.js + Express** (`server/index.js`)
@@ -66,4 +87,5 @@ Workflow: `.github/workflows/deploy.yml`
 - React + TypeScript
 - Vite
 - Material UI
-- Node.js + Express + SQLite (локальная БД)
+- Node.js + Express + SQLite + Drizzle ORM
+- Docker Compose

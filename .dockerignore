@@ -1,0 +1,10 @@
+node_modules
+dist
+.git
+.github
+*.md
+server/worklog.db
+server/worklog.db-wal
+server/worklog.db-shm
+.env
+.env.local
