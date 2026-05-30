@@ -1,7 +1,11 @@
 import Database from 'better-sqlite3';
+import { drizzle } from 'drizzle-orm/better-sqlite3';
+import { migrate } from 'drizzle-orm/better-sqlite3/migrator';
+import { count } from 'drizzle-orm';
 import { readFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
+import { entries } from './schema.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DB_PATH = join(__dirname, 'worklog.db');
@@ -12,24 +16,15 @@ function seedDb(db) {
   const seedPath = join(__dirname, '..', 'public', 'worklog-static-data.json');
   const data = JSON.parse(readFileSync(seedPath, 'utf-8'));
 
-  const insert = db.prepare(`
-    INSERT INTO entries (date, workType, volume, unit, performer)
-    VALUES (@date, @workType, @volume, @unit, @performer)
-  `);
-
-  const insertMany = db.transaction((entries) => {
-    for (const entry of entries) {
-      insert.run({
-        date: entry.date,
-        workType: entry.workType,
-        volume: entry.volume,
-        unit: entry.unit,
-        performer: entry.performer,
-      });
-    }
-  });
-
-  insertMany(data.entries);
+  db.insert(entries).values(
+    data.entries.map(({ date, workType, volume, unit, performer }) => ({
+      date,
+      workType,
+      volume,
+      unit,
+      performer,
+    })),
+  ).run();
 }
 
 export function getDb() {
@@ -37,25 +32,23 @@ export function getDb() {
     return dbInstance;
   }
 
-  dbInstance = new Database(DB_PATH);
-  dbInstance.pragma('journal_mode = WAL');
+  const sqlite = new Database(DB_PATH);
+  sqlite.pragma('journal_mode = WAL');
 
-  dbInstance.exec(`
-    CREATE TABLE IF NOT EXISTS entries (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      date TEXT NOT NULL,
-      workType TEXT NOT NULL,
-      volume TEXT NOT NULL,
-      unit TEXT NOT NULL,
-      performer TEXT NOT NULL
-    )
-  `);
+  dbInstance = drizzle(sqlite, { schema: { entries } });
 
-  const { count } = dbInstance.prepare('SELECT COUNT(*) as count FROM entries').get();
+  migrate(dbInstance, { migrationsFolder: join(__dirname, 'migrations') });
 
-  if (count === 0) {
+  const { count: entriesCount } = dbInstance
+    .select({ count: count() })
+    .from(entries)
+    .get();
+
+  if (entriesCount === 0) {
     seedDb(dbInstance);
   }
 
   return dbInstance;
 }
+
+export { entries };

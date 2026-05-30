@@ -1,6 +1,7 @@
 import cors from 'cors';
 import express from 'express';
-import { getDb } from './db.js';
+import { desc, eq } from 'drizzle-orm';
+import { entries, getDb } from './db.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -10,51 +11,50 @@ app.use(express.json());
 
 app.get('/entries', (_req, res) => {
   const db = getDb();
-  const entries = db.prepare('SELECT * FROM entries ORDER BY date DESC').all();
-  res.json(entries);
+  const allEntries = db.select().from(entries).orderBy(desc(entries.date)).all();
+  res.json(allEntries);
 });
 
 app.post('/entries', (req, res) => {
   const { date, workType, volume, unit, performer } = req.body;
   const db = getDb();
 
-  const result = db
-    .prepare(`
-      INSERT INTO entries (date, workType, volume, unit, performer)
-      VALUES (?, ?, ?, ?, ?)
-    `)
-    .run(date, workType, volume, unit, performer);
+  const entry = db
+    .insert(entries)
+    .values({ date, workType, volume, unit, performer })
+    .returning()
+    .get();
 
-  const entry = db.prepare('SELECT * FROM entries WHERE id = ?').get(result.lastInsertRowid);
   res.status(201).json(entry);
 });
 
 app.put('/entries/:id', (req, res) => {
   const { date, workType, volume, unit, performer } = req.body;
   const db = getDb();
+  const id = Number(req.params.id);
 
-  const result = db
-    .prepare(`
-      UPDATE entries
-      SET date = ?, workType = ?, volume = ?, unit = ?, performer = ?
-      WHERE id = ?
-    `)
-    .run(date, workType, volume, unit, performer, req.params.id);
+  const entry = db
+    .update(entries)
+    .set({ date, workType, volume, unit, performer })
+    .where(eq(entries.id, id))
+    .returning()
+    .get();
 
-  if (result.changes === 0) {
+  if (!entry) {
     res.status(404).json({ error: 'Запись не найдена' });
     return;
   }
 
-  const entry = db.prepare('SELECT * FROM entries WHERE id = ?').get(req.params.id);
   res.json(entry);
 });
 
 app.delete('/entries/:id', (req, res) => {
   const db = getDb();
-  const result = db.prepare('DELETE FROM entries WHERE id = ?').run(req.params.id);
+  const id = Number(req.params.id);
 
-  if (result.changes === 0) {
+  const entry = db.delete(entries).where(eq(entries.id, id)).returning().get();
+
+  if (!entry) {
     res.status(404).json({ error: 'Запись не найдена' });
     return;
   }
