@@ -6,11 +6,9 @@
 
 ## Production URL
 
-Сайт на GitHub Pages:
-
 **https://markovada.github.io/Loogbook/**
 
-> Если страница не открывается, проверь в репозитории: **Settings → Pages → Deploy from a branch → `gh-pages` / `(root)`**.
+> На GitHub Pages работает только фронтенд (чтение демо-данных). CRUD с SQLite — локально через Node.js API.
 
 ## Локальный запуск
 
@@ -20,13 +18,36 @@ npm run dev:full
 ```
 
 - Фронтенд: http://localhost:5173/
-- API (json-server): http://localhost:3001/entries
+- API (Node.js + SQLite): http://localhost:3001/entries
 
-Только фронтенд (данные подгрузятся из статического JSON):
+Только фронтенд (без API, данные из статического JSON):
 
 ```bash
 npm run dev
 ```
+
+Только API-сервер:
+
+```bash
+npm run server
+```
+
+## База данных (SQLite)
+
+- Backend: **Node.js + Express** (`server/index.js`)
+- БД: **SQLite** — файл `server/worklog.db` (создаётся автоматически)
+- При первом запуске таблица `entries` заполняется из `public/worklog-static-data.json`
+
+Структура таблицы `entries`:
+
+| Поле | Тип |
+|---|---|
+| id | INTEGER (PK) |
+| date | TEXT |
+| workType | TEXT |
+| volume | TEXT |
+| unit | TEXT |
+| performer | TEXT |
 
 ## Сборка
 
@@ -45,4 +66,4 @@ Workflow: `.github/workflows/deploy.yml`
 - React + TypeScript
 - Vite
 - Material UI
-- json-server (локальная БД для разработки)
+- Node.js + Express + SQLite (локальная БД)

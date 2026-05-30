@@ -11,6 +11,13 @@ node_modules
 dist
 dist-ssr
 *.local
+.env
+.env.local
+
+# SQLite database
+server/worklog.db
+server/worklog.db-wal
+server/worklog.db-shm
 
 # Editor directories and files
 .vscode/*
