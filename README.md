@@ -2,6 +2,8 @@
 
 Внутренний инструмент для учёта выполненных работ на строительном объекте.
 
+**productionUrl:** https://markovada.github.io/Loogbook/
+
 ## Production URL
 
 Сайт на GitHub Pages:
