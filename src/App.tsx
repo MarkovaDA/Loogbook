@@ -17,7 +17,7 @@ import {
   updateEntry,
 } from './api/workLogApi';
 import { AddFormDialog } from './components/AddForm';
-import { EditForm } from './components/EditForm';
+import { EditFormDialog } from './components/EditForm';
 import { Table } from './components/Table';
 import type { WorkLogEntry, WorkLogFormValues } from './types';
 
@@ -140,16 +140,6 @@ function App() {
             </Alert>
           )}
 
-          {editingEntry && (
-            <EditForm
-              key={editingEntry.id}
-              editingEntry={editingEntry}
-              isSubmitting={isSubmitting}
-              onSubmit={handleEdit}
-              onCancelEdit={() => setEditingEntry(null)}
-            />
-          )}
-
           {isLoading ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
               <CircularProgress />
@@ -172,6 +162,14 @@ function App() {
             isSubmitting={isSubmitting}
             onClose={() => setIsAddOpen(false)}
             onSubmit={handleAdd}
+          />
+
+          <EditFormDialog
+            open={editingEntry !== null}
+            editingEntry={editingEntry}
+            isSubmitting={isSubmitting}
+            onClose={() => setEditingEntry(null)}
+            onSubmit={handleEdit}
           />
         </Stack>
       </Container>

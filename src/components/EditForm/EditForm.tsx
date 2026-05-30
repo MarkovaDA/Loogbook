@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { Box, Button, Paper, Stack, Typography } from '@mui/material';
+import { Box, Button, Stack } from '@mui/material';
 import type { WorkLogEntry, WorkLogFormValues } from '../../types';
 import { useWorkTypes } from '../../hooks/useWorkTypes';
 import { Fields } from '../Fields';
@@ -9,14 +9,14 @@ interface EditFormProps {
   editingEntry: WorkLogEntry;
   isSubmitting: boolean;
   onSubmit: (values: WorkLogFormValues) => Promise<void>;
-  onCancelEdit: () => void;
+  onCancel: () => void;
 }
 
 export function EditForm({
   editingEntry,
   isSubmitting,
   onSubmit,
-  onCancelEdit,
+  onCancel,
 }: EditFormProps) {
   const { workTypes, isLoading: isWorkTypesLoading } = useWorkTypes();
   const [values, setValues] = useState<WorkLogFormValues>({
@@ -47,37 +47,25 @@ export function EditForm({
   };
 
   return (
-    <Paper elevation={2} sx={{ p: 3 }}>
-      <Typography variant="h6" component="h2" gutterBottom>
-        Редактирование записи
-      </Typography>
+    <Box component="form" onSubmit={handleSubmit} noValidate>
+      <Stack spacing={2}>
+        <Fields
+          values={values}
+          error={error}
+          workTypes={workTypes}
+          isWorkTypesLoading={isWorkTypesLoading}
+          onChange={handleChange}
+        />
 
-      <Box component="form" onSubmit={handleSubmit} noValidate>
-        <Stack spacing={2}>
-          <Fields
-            values={values}
-            error={error}
-            workTypes={workTypes}
-            isWorkTypesLoading={isWorkTypesLoading}
-            onChange={handleChange}
-          />
-
-          <Stack direction="row" spacing={1}>
-            <Button type="submit" variant="contained" disabled={isSubmitting}>
-              {isSubmitting ? 'Сохранение...' : 'Сохранить изменения'}
-            </Button>
-
-            <Button
-              type="button"
-              variant="outlined"
-              onClick={onCancelEdit}
-              disabled={isSubmitting}
-            >
-              Отмена
-            </Button>
-          </Stack>
+        <Stack direction="row" spacing={1} sx={{ justifyContent: 'flex-end' }}>
+          <Button type="button" variant="outlined" onClick={onCancel} disabled={isSubmitting}>
+            Отмена
+          </Button>
+          <Button type="submit" variant="contained" disabled={isSubmitting}>
+            {isSubmitting ? 'Сохранение...' : 'Сохранить изменения'}
+          </Button>
         </Stack>
-      </Box>
-    </Paper>
+      </Stack>
+    </Box>
   );
 }
